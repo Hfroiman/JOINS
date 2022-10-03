@@ -75,19 +75,20 @@ ORDER by p.DiasConstruccion desc
 -- 'Con anterioridad' → Cuando la cantidad de días de construcción del pedido sea menor a los días de construcción del producto.
 -- 'Exacto'' → Si la cantidad de días de construcción del pedido y el producto son iguales
 -- 'Con demora' → Cuando la cantidad de días de construcción del pedido sea mayor a los días de construcción del producto.
-    SELECT
-        p.ID,
-        p.FechaSolicitud,
-        p.FechaFinalizacion,
-        pr.DiasConstruccion,
-        Case 
-        when (p.FechaFinalizacion-p.FechaSolicitud)<pr.DiasConstruccion then 'Con anterioridad'
-        when (p.FechaFinalizacion-p.FechaSolicitud)=pr.DiasConstruccion then 'Exacto'
-        else 'Con demora'
-        end as TiempoConstruccion
-    from Pedidos p
-    inner JOIN Productos pr on p.IDProducto=pr.ID
-    NOSALIO
+
+SELECT 
+    pe.ID,
+    pe.FechaSolicitud,
+    pe.FechaFinalizacion,
+    pr.DiasConstruccion,
+    DATEDIFF(DAY, pe.FechaSolicitud, pe.FechaFinalizacion) DiasContruccionPedido,
+    case 
+    when DiasConstruccion>pr.DiasConstruccion then 'Con anterioridad'
+    when DiasConstruccion=pr.DiasConstruccion then 'Exacto'
+    when DiasConstruccion<pr.DiasConstruccion then 'Con demora'
+    end as TiempoConstruccion
+FROM Pedidos pe
+inner join Productos pr on pe.IDProducto=pr.ID
 
 
 -- Listar por cada cliente el apellido y nombres y los nombres de las categorías de aquellos productos de los cuales hayan realizado pedidos.
